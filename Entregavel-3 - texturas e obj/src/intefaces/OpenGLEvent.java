@@ -1,5 +1,12 @@
 package intefaces;
 
+import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
@@ -15,6 +22,8 @@ public class OpenGLEvent implements GLEventListener{
     private final Ponto p1;
     private final Ponto p2;
     private GLU glu;
+    private Texture texturaCubo;
+    
     
     public OpenGLEvent(InputEvent key, Ponto p1, Ponto p2){
         this.key = key;
@@ -30,13 +39,15 @@ public class OpenGLEvent implements GLEventListener{
         gl.setSwapInterval(1);
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         gl.glShadeModel(GL.GL_SMOOTH); 
+        glu = new GLU();
+        carregarTextura(gl, glu);
     }
 
     public void display(GLAutoDrawable drawable) {
        GL gl = drawable.getGL();
        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
        gl.glLoadIdentity();
-        
+       
        if (key.isWireFrame) {
            gl.glPolygonMode( GL.GL_FRONT_AND_BACK, GL.GL_LINE );
            gl.glLineWidth(1.0f);
@@ -45,9 +56,9 @@ public class OpenGLEvent implements GLEventListener{
           gl.glLineWidth(0.0f);
        }
        gl.glEnable(GL.GL_DEPTH_TEST);
+//       gl.glEnable(GL.GL_TEXTURE_2D);
        
        glu.gluLookAt(key.eyeX, key.eyeY, key.eyeZ, key.centroX, key.centroY, key.centroZ, key.upx, key.upy, key.upz);
-
        drawCube(gl);
        
        gl.glFlush();
@@ -64,6 +75,8 @@ public class OpenGLEvent implements GLEventListener{
         Ponto topLeftBaixo = new Ponto(p1.x, p1.y, p2.z);
         Ponto botLeftBaixo = p1;
         Ponto botRightBaixo = new Ponto(p2.x, p1.y, p1.z);
+        
+        gl.glDisable(GL.GL_TEXTURE_2D);
         
         //Face Bottom
         gl.glBegin(GL.GL_QUADS);
@@ -96,9 +109,19 @@ public class OpenGLEvent implements GLEventListener{
         gl.glEnd();
         
         //Face Front
+        texturaCubo.enable();
+        texturaCubo.bind();
         gl.glBegin(GL.GL_QUADS);
             gl.glColor3f(1.0f, 1.0f, 1.0f);
-            drawFace(gl, topRightCima, topLeftCima, topLeftBaixo, topRightBaixo);
+//            drawFace(gl, topRightCima, topLeftCima, topLeftBaixo, topRightBaixo);
+            gl.glTexCoord2d(1, 1);
+            gl.glVertex3f(topRightCima.x, topRightCima.y, topRightCima.z);   // Top Right
+            gl.glTexCoord2d(0, 1);
+            gl.glVertex3f(topLeftCima.x, topLeftCima.y, topLeftCima.z);  // Top Left
+            gl.glTexCoord2d(0, 0);
+            gl.glVertex3f(topLeftBaixo.x, topLeftBaixo.y, topLeftBaixo.z); // Bottom Left
+            gl.glTexCoord2d(1, 0);
+            gl.glVertex3f(topRightBaixo.x, topRightBaixo.y, topRightBaixo.z);  // Bottom Right
         gl.glEnd();
         
     }
@@ -112,7 +135,7 @@ public class OpenGLEvent implements GLEventListener{
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
         GL gl = drawable.getGL();
-        glu = new GLU();
+        
 
         if (height <= 0) { // avoid a divide by zero error!
             height = 1;
@@ -130,6 +153,18 @@ public class OpenGLEvent implements GLEventListener{
 
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
         
+    }
+
+    private void carregarTextura(GL gl, GLU glu) {
+
+        try {
+            BufferedImage im = ImageIO.read(new File("img/cb.jpg"));
+            this.texturaCubo = TextureIO.newTexture(im, false);
+            this.texturaCubo.setTexParameteri(GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+            this.texturaCubo.setTexParameteri(GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+        } catch (Exception ex) {
+            Logger.getLogger(OpenGLEvent.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }

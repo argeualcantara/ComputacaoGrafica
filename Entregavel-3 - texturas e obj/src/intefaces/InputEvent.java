@@ -37,6 +37,7 @@ public class InputEvent implements KeyListener{
      * Variáveis contadoras para limitar os angulos entre 0 e 180
      */
     private double thxc = 0;
+    private double thxc_INICIAL = 0;
     private double thyc = 0;
     private double thzc = 0;
     
@@ -46,6 +47,27 @@ public class InputEvent implements KeyListener{
      * Posições iniciais dos vetores eye e up salvas para o botão R - reset
      */
     public InputEvent (){
+        eyeX_INICIAL = eyeX;
+        eyeY_INICIAL = eyeY;
+        eyeZ_INICIAL = eyeZ;
+        
+        upx_INICIAL = upx;
+        upy_INICIAL = upy;
+        upz_INICIAL = upz;
+    }
+    public InputEvent(int angle){
+        thxc = Math.toRadians(angle);
+        thxc_INICIAL = thxc;
+        double ey = eyeY;
+        double ez = eyeZ;
+        eyeY = ey * Math.cos(thxc) + ez * Math.sin(thxc);
+        eyeZ = ey * -Math.sin(thxc) + ez * Math.cos(thxc);
+
+        ey = upy;
+        ez = upz;
+        upy = ey * Math.cos(thxc) + ez * Math.sin(thxc);
+        upz = ey * -Math.sin(thxc) + ez * Math.cos(thxc);
+        
         eyeX_INICIAL = eyeX;
         eyeY_INICIAL = eyeY;
         eyeZ_INICIAL = eyeZ;
@@ -70,7 +92,7 @@ public class InputEvent implements KeyListener{
         double ex,ey,ez;
         switch(key){
             case KeyEvent.VK_LEFT:
-                if(thyc < (Math.toRadians(1) * 180)){
+                if(thyc < (Math.toRadians(1) * 179)){
                     thy = angulo;
                     thyc += angulo;
                     ex = eyeX;
@@ -85,7 +107,7 @@ public class InputEvent implements KeyListener{
                 }
                 break;
             case KeyEvent.VK_RIGHT:
-                if(thyc > 0){
+                if(thyc > angulo){
                     thy = -angulo;
                     thyc -= angulo;
                     ex = eyeX;
@@ -100,22 +122,24 @@ public class InputEvent implements KeyListener{
                 }
                 break;
             case KeyEvent.VK_DOWN:
-                if(thxc > 0){
+                if(thxc > -(Math.toRadians(1) * 179)){
                     thx = -angulo;
                     thxc -= angulo;
+                    
                     ey = eyeY;
                     ez = eyeZ;
                     eyeY = ey * Math.cos(thx) + ez * Math.sin(thx);
                     eyeZ = ey * -Math.sin(thx) + ez * Math.cos(thx);
-
+                    
                     ey = upy;
                     ez = upz;
                     upy = ey * Math.cos(thx) + ez * Math.sin(thx);
                     upz = ey * -Math.sin(thx) + ez * Math.cos(thx);
+
                 }
                 break;
             case KeyEvent.VK_UP:
-                if( thxc < (Math.toRadians(1) * 180)){
+                if( thxc < -angulo){
                     thx = angulo;
                     thxc += angulo;
                     ey = eyeY;
@@ -169,7 +193,7 @@ public class InputEvent implements KeyListener{
                 eyeY = eyeY_INICIAL;
                 eyeZ = eyeZ_INICIAL;
                 
-                thxc = 0;
+                thxc = thxc_INICIAL;
                 thyc = 0;
                 thzc = 0;
                 break;
