@@ -2,6 +2,7 @@ package intefaces;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import model.Personagem;
 
 /**
  *
@@ -42,6 +43,8 @@ public class InputEvent implements KeyListener{
     private double thzc = 0;
     
     public boolean isWireFrame = false;
+    
+    public Personagem personagem;
 
     /**
      * Posições iniciais dos vetores eye e up salvas para o botão R - reset
@@ -75,6 +78,7 @@ public class InputEvent implements KeyListener{
         upx_INICIAL = upx;
         upy_INICIAL = upy;
         upz_INICIAL = upz;
+        
     }
     public void keyTyped(KeyEvent e) {
         
@@ -91,7 +95,7 @@ public class InputEvent implements KeyListener{
         double angulo = Math.toRadians(1) * 5;
         double ex,ey,ez;
         switch(key){
-            case KeyEvent.VK_LEFT:
+            case KeyEvent.VK_A:
                 if(thyc < (Math.toRadians(1) * 179)){
                     thy = angulo;
                     thyc += angulo;
@@ -106,7 +110,7 @@ public class InputEvent implements KeyListener{
                     upz = ex * Math.sin(thy) + ez * Math.cos(thy);
                 }
                 break;
-            case KeyEvent.VK_RIGHT:
+            case KeyEvent.VK_D:
                 if(thyc > angulo){
                     thy = -angulo;
                     thyc -= angulo;
@@ -121,7 +125,7 @@ public class InputEvent implements KeyListener{
                     upz = ex * Math.sin(thy) + ez * Math.cos(thy);
                 }
                 break;
-            case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_S:
                 if(thxc > -(Math.toRadians(1) * 179)){
                     thx = -angulo;
                     thxc -= angulo;
@@ -138,7 +142,7 @@ public class InputEvent implements KeyListener{
 
                 }
                 break;
-            case KeyEvent.VK_UP:
+            case KeyEvent.VK_W:
                 if( thxc < -angulo){
                     thx = angulo;
                     thxc += angulo;
@@ -153,7 +157,7 @@ public class InputEvent implements KeyListener{
                     upz = ey * -Math.sin(thx) + ez * Math.cos(thx);
                 }
                 break;    
-            case KeyEvent.VK_PAGE_UP:
+            case KeyEvent.VK_E:
                 thz = angulo;
                 thzc += angulo;
                 ex = eyeX;
@@ -167,7 +171,7 @@ public class InputEvent implements KeyListener{
                 upy = ex * -Math.sin(thz) + ey * Math.cos(thz);
                 break;
                 
-            case KeyEvent.VK_PAGE_DOWN:
+            case KeyEvent.VK_Q:
                 thz = -angulo;
                 thzc -= angulo;
                 ex = eyeX;
@@ -180,7 +184,14 @@ public class InputEvent implements KeyListener{
                 upx = ex * Math.cos(thz) + ey * Math.sin(thz);
                 upy = ex * -Math.sin(thz) + ey * Math.cos(thz);
                 break;    
-                
+            case KeyEvent.VK_I:
+                eyeX = 0;
+                eyeY = 0;
+                eyeZ = 40;
+                upx = 0;
+                upy = 1;
+                upz = 0;
+                break;
             case KeyEvent.VK_L:
                 isWireFrame = !isWireFrame;
                 break;
@@ -196,6 +207,16 @@ public class InputEvent implements KeyListener{
                 thxc = thxc_INICIAL;
                 thyc = 0;
                 thzc = 0;
+                break;
+                
+            case KeyEvent.VK_UP:
+                personagem.andar();
+                break;
+            case KeyEvent.VK_RIGHT:
+                personagem.virarDireita();
+                break;
+            case KeyEvent.VK_LEFT:
+                personagem.virarEsquerda();
                 break;
         }
         

@@ -6,7 +6,11 @@ import intefaces.InputEvent;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.media.opengl.GLCanvas;
+import model.Personagem;
 import model.Ponto;
 
 /**
@@ -18,7 +22,7 @@ public class CameraRotateMain{
     private static GLCanvas canvas;
     
     public static void main(String[] args) {
-        Frame frame = new Frame("Cubo");
+        Frame frame = new Frame("Planes of war");
         canvas = new GLCanvas();
         
         //Setando os pontos para o cento ficar no 0,0,0
@@ -26,7 +30,7 @@ public class CameraRotateMain{
         Ponto p2 = new Ponto(L/2, L/2, (int) (L/2 * 0.2));
 
         InputEvent inputListener = new InputEvent(-45);
-//        InputEvent inputListener = new InputEvent();
+
         OpenGLEvent glListener = new OpenGLEvent(inputListener, p1, p2);
         
         canvas.addKeyListener(inputListener);

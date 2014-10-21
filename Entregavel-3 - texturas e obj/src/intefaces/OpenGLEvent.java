@@ -4,6 +4,7 @@ import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -11,6 +12,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
+import model.Personagem;
 import model.Ponto;
 
 /**
@@ -23,6 +25,7 @@ public class OpenGLEvent implements GLEventListener{
     private final Ponto p2;
     private GLU glu;
     private Texture texturaCubo;
+    private Personagem pers;
     
     
     public OpenGLEvent(InputEvent key, Ponto p1, Ponto p2){
@@ -32,7 +35,6 @@ public class OpenGLEvent implements GLEventListener{
         this.key.centroX = (p1.x + p2.x) / 2;
         this.key.centroY = (p1.y + p2.y) / 2;
         this.key.centroZ = (p1.z + p2.z) / 2;
-        
     }
     public void init(GLAutoDrawable drawable) {
         GL gl = drawable.getGL();
@@ -41,6 +43,13 @@ public class OpenGLEvent implements GLEventListener{
         gl.glShadeModel(GL.GL_SMOOTH); 
         glu = new GLU();
         carregarTextura(gl, glu);
+        try {
+            pers = new Personagem(gl);
+        } catch (IOException ex) {
+            Logger.getLogger(OpenGLEvent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.key.personagem = pers;
+        
     }
 
     public void display(GLAutoDrawable drawable) {
@@ -60,6 +69,7 @@ public class OpenGLEvent implements GLEventListener{
        
        glu.gluLookAt(key.eyeX, key.eyeY, key.eyeZ, key.centroX, key.centroY, key.centroZ, key.upx, key.upy, key.upz);
        drawCube(gl);
+       pers.inserir(gl);
        
        gl.glFlush();
     }
