@@ -24,6 +24,7 @@ public class Personagem {
     Texture tex;
     int posX;
     int posY;
+    int posZ;
     char dir = 'N';
     private int anguloRotacao;
     public Personagem(GL gl) throws IOException {
@@ -35,6 +36,7 @@ public class Personagem {
         this.tex.setTexParameteri(GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
         posX = 1;
         posY = -12;
+        posZ = 4;
     }
      
     public void inserir(GL gl) {
@@ -44,7 +46,7 @@ public class Personagem {
         tex.bind();
         
         gl.glPushMatrix();
-            gl.glTranslatef(posX, posY, 4);
+            gl.glTranslatef(posX, posY, posZ);
             gl.glRotatef(100.0f, 1.0f, 0.0f, 0.0f);
             gl.glRotatef(180.0f , 0.0f, 1.0f, 0.0f);
             gl.glRotatef(anguloRotacao, 0, 1, 0);
@@ -120,6 +122,20 @@ public class Personagem {
             case 'L':
                 dir = 'S';
                 break;
+        }
+    }
+
+    public void sobe() {
+        posZ += 1;
+        if(posZ > 10){
+            posZ = 10;
+        }
+    }
+
+    public void desce() {
+        posZ -= 1;
+        if(posZ < 4){
+            posZ = 4;
         }
     }
 }

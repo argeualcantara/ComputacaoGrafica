@@ -218,6 +218,12 @@ public class InputEvent implements KeyListener{
             case KeyEvent.VK_LEFT:
                 personagem.virarEsquerda();
                 break;
+            case KeyEvent.VK_PAGE_UP:
+                personagem.sobe();
+                break;
+            case KeyEvent.VK_PAGE_DOWN:
+                personagem.desce();
+                break;
         }
         
     }
