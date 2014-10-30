@@ -233,7 +233,9 @@ public class InputEvent implements KeyListener{
             case KeyEvent.VK_2: luzZ = 200; break;
             case KeyEvent.VK_3: luzZ = 300; break;
             case KeyEvent.VK_4: luzZ = 400; break;
-            case KeyEvent.VK_P: this.fp = !fp;
+            case KeyEvent.VK_8:
+            case KeyEvent.VK_ASTERISK:
+            case KeyEvent.VK_MULTIPLY: this.fp = !fp;break;
         }
         
     }
