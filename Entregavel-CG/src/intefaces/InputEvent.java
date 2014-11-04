@@ -47,6 +47,7 @@ public class InputEvent implements KeyListener{
     public Personagem personagem;
     float luzZ;
     public boolean fp;
+    public boolean isLightOn = true;
 
     /**
      * Posições iniciais dos vetores eye e up salvas para o botão R - reset
@@ -236,6 +237,7 @@ public class InputEvent implements KeyListener{
             case KeyEvent.VK_8:
             case KeyEvent.VK_ASTERISK:
             case KeyEvent.VK_MULTIPLY: this.fp = !fp;break;
+            case KeyEvent.VK_O: this.isLightOn = !isLightOn;break;
         }
         
     }

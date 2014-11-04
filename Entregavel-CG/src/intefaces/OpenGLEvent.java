@@ -52,10 +52,12 @@ public class OpenGLEvent implements GLEventListener{
         carregarTextura(gl, glu);
         try {
             pers = new Personagem(gl);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(OpenGLEvent.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.key.personagem = pers;
+        pers.ocupado[10+pers.ocupado.length/2][6+pers.ocupado.length/2] = true;
+        ocupaDummy1(pers);
         
     }
 
@@ -75,10 +77,14 @@ public class OpenGLEvent implements GLEventListener{
        gl.glEnable(GL.GL_DEPTH_TEST);
        gl.glEnable(GL.GL_TEXTURE_2D);
        
-       gl.glEnable(GL.GL_LIGHTING);
-       gl.glEnable(GL.GL_LIGHT1);
-       gl.glEnable(GL.GL_LIGHT0);
-       addLight(gl);
+       if(key.isLightOn){
+            gl.glEnable(GL.GL_LIGHTING);
+            gl.glEnable(GL.GL_LIGHT1);
+            gl.glEnable(GL.GL_LIGHT0);
+            addLight(gl);
+       }else{
+           gl.glDisable(GL.GL_LIGHTING);
+       }
        
        if(key.fp){
            glu.gluLookAt(pers.eyeX, pers.eyeY, pers.eyeZ, pers.centroX, pers.centroY, pers.centroZ, pers.upx, pers.upy, key.upz);
@@ -88,8 +94,11 @@ public class OpenGLEvent implements GLEventListener{
        
        drawCube(gl);
        pers.inserir(gl);
-       pers.insereDummy(gl, 10,6);
-       pers.insereDummy(gl, -3,6);
+       
+        pers.insereDummy(gl, 9,6);
+        pers.insereDummy(gl, -6,6);
+        pers.ocupado[9+(pers.ocupado.length/2)][6+(pers.ocupado.length/2)] = true;
+        pers.ocupado[-6+(pers.ocupado.length/2)][6+(pers.ocupado.length/2)] = true;
        
        gl.glFlush();
     }
@@ -231,6 +240,17 @@ public class OpenGLEvent implements GLEventListener{
         glLightPos = FloatBuffer.wrap(fpos);
         gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, glLightPos);
        
+    }
+
+    private void ocupaDummy1(Personagem pers) {
+//        //Ocupa em Y
+//        pers.ocupado[-3+pers.ocupado.length/2][6+pers.ocupado.length/2] = true;
+//        pers.ocupado[-3+pers.ocupado.length/2][5+pers.ocupado.length/2] = true;
+//        pers.ocupado[-3+pers.ocupado.length/2][3+pers.ocupado.length/2] = true;
+//        pers.ocupado[-3+pers.ocupado.length/2][2+pers.ocupado.length/2] = true;
+//        pers.ocupado[-3+pers.ocupado.length/2][1+pers.ocupado.length/2] = true;
+//        
+//        //Ocupa em X
     }
     
 }

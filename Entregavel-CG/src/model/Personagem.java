@@ -36,16 +36,20 @@ public class Personagem {
     public int eyeZ;
     public int upx;
     public int upy;
+    public boolean [][] ocupado;
     public Personagem(GL gl) throws IOException {
         super();
+        this.ocupado = new boolean [27][27];
         this.obj = ObjLoader.loadObj("object/F-5E Tiger II (05).obj", gl);
         BufferedImage im = ImageIO.read(new File("src/object/F-5E Tiger II (05).bmp"));
         this.tex = TextureIO.newTexture(im, true);
         this.tex.setTexParameteri(GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
         this.tex.setTexParameteri(GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-        posX = 1;
+        posX = 3;
         posY = -12;
         posZ = 4;
+        
+        ocupado[posX+(ocupado.length/2)] [posY+(ocupado.length/2)] = true;
         
         eyeX = posX;
         eyeY = posY-2;
@@ -56,7 +60,7 @@ public class Personagem {
         upx = 0;
         upy = 1;
     }
-     
+
     public void inserir(GL gl) {
         
         gl.glEnable(GL.GL_TEXTURE_2D);
@@ -69,7 +73,7 @@ public class Personagem {
             gl.glRotatef(100.0f, 1.0f, 0.0f, 0.0f);
             gl.glRotatef(180.0f , 0.0f, 1.0f, 0.0f);
             gl.glRotatef(anguloRotacao, 0, 1, 0);
-            gl.glScalef(0.004f, 0.004f, 0.004f);
+            gl.glScalef(0.002f, 0.002f, 0.002f);
             obj.render(gl);
         gl.glPopMatrix();
         
@@ -78,55 +82,97 @@ public class Personagem {
     public void andar(){
         switch(dir){
             case 'N':
-                posY += 1;
-                eyeX = posX;
-                eyeY = posY-2;
-                centroX = eyeX;
-                centroY = eyeY+5;
-                upx = 0;
-                upy = 1;
+                
+                if(posY+3 <= 12 && !ocupado[posX+(ocupado.length/2)] [posY+3+(ocupado.length/2)]){
+                    ocupado[posX+(ocupado.length/2)] [posY+(ocupado.length/2)] = false;
+                    ocupado[posX+(ocupado.length/2)] [posY+3+(ocupado.length/2)] = true;
+                    posY += 3;
+                    eyeX = posX;
+                    eyeY = posY-2;
+                    centroX = eyeX;
+                    centroY = eyeY+5;
+                    upx = 0;
+                    upy = 1;
+                }else{
+                    if(posY+3 > 12){
+                        System.out.println("Fora do tabuleiro.");
+                    }else{
+                        System.out.println("Posição ocupada.");
+                    }
+                }
                 break;
             case 'S':
-                posY -= 1;
-                eyeX = posX;
-                eyeY = posY+2;
-                centroX = eyeX;
-                centroY = eyeY-5;
-                upx = 0;
-                upy = 1;
+                if(posY-3 >= -12 && !ocupado[posX+(ocupado.length/2)] [posY-3+(ocupado.length/2)]){
+                    ocupado[posX+(ocupado.length/2)] [posY+(ocupado.length/2)] = false;
+                    ocupado[posX+(ocupado.length/2)] [posY-3+(ocupado.length/2)] = true;
+                    posY -= 3;
+                    eyeX = posX;
+                    eyeY = posY+2;
+                    centroX = eyeX;
+                    centroY = eyeY-5;
+                    upx = 0;
+                    upy = 1;
+                }else{
+                    if(posY-3 < -12){
+                        System.out.println("Fora do tabuleiro.");
+                    }else{
+                        System.out.println("Posição ocupada.");
+                    }
+                }
+                
                 break;
             case 'L':
-                posX -= 1;
-                eyeX = posX+2;
-                eyeY = posY;
-                centroX = posX - 5;
-                centroY = posY;
-                upx = 1;
-                upy = 0;
+                if(posX-3 >= -12 && !ocupado[posX-3+(ocupado.length/2)] [posY+(ocupado.length/2)]){
+                    ocupado[posX+(ocupado.length/2)] [posY+(ocupado.length/2)] = false;
+                    ocupado[posX-3+(ocupado.length/2)] [posY+(ocupado.length/2)] = true;
+                    posX -= 3;
+                    eyeX = posX+2;
+                    eyeY = posY;
+                    centroX = posX - 5;
+                    centroY = posY;
+                    upx = 1;
+                    upy = 0;
+                }else{
+                    if(posX-3 < -12){
+                        System.out.println("Fora do tabuleiro.");
+                    }else{
+                        System.out.println("Posição ocupada.");
+                    }
+                }
                 break;
             case 'O':
-                posX += 1;
-                eyeX = posX - 2;
-                eyeY = posY;
-                centroX = posX + 5;
-                centroY = posY;
-                upx = 1;
-                upy = 0;
+                if(posX+3 <= 12 && !ocupado[posX+3+(ocupado.length/2)] [posY+(ocupado.length/2)]){
+                    ocupado[posX+(ocupado.length/2)] [posY+(ocupado.length/2)] = false;
+                    ocupado[posX+3+(ocupado.length/2)] [posY+(ocupado.length/2)] = true;
+                    posX += 3;
+                    eyeX = posX - 2;
+                    eyeY = posY;
+                    centroX = posX + 5;
+                    centroY = posY;
+                    upx = 1;
+                    upy = 0;
+                }else{
+                    if(posX+3 > 12){
+                        System.out.println("Fora do tabuleiro.");
+                    }else{
+                        System.out.println("Posição ocupada.");
+                    }
+                }
                 break;
         }
         
-        if(posY > 11){
-            posY = 11;
+        if(posY > 12){
+            posY = 12;
         }
         if(posY < -12){
             posY = -12;
         }
         
-        if(posX > 11){
-            posX = 11;
+        if(posX > 12){
+            posX = 12;
         }
-        if(posX < -11){
-            posX = -11;
+        if(posX < -12){
+            posX = -12;
         }
         
     }
@@ -240,7 +286,7 @@ public class Personagem {
                 gl.glTranslatef(x, y, 4);
                 gl.glRotatef(100.0f, 1.0f, 0.0f, 0.0f);
                 gl.glRotatef(180.0f , 0.0f, 1.0f, 0.0f);
-                gl.glScalef(0.004f, 0.004f, 0.004f);
+                gl.glScalef(0.002f, 0.002f, 0.002f);
                 obj.render(gl);
             gl.glPopMatrix();
             
