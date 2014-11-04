@@ -56,9 +56,8 @@ public class OpenGLEvent implements GLEventListener{
             Logger.getLogger(OpenGLEvent.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.key.personagem = pers;
-        pers.ocupado[10+pers.ocupado.length/2][6+pers.ocupado.length/2] = true;
-        ocupaDummy1(pers);
-        
+        pers.ocupado[9+(pers.ocupado.length/2)][6+(pers.ocupado.length/2)] = true;
+        pers.ocupado[-6+(pers.ocupado.length/2)][6+(pers.ocupado.length/2)] = true;
     }
 
     @SuppressWarnings("empty-statement")
@@ -77,6 +76,7 @@ public class OpenGLEvent implements GLEventListener{
        gl.glEnable(GL.GL_DEPTH_TEST);
        gl.glEnable(GL.GL_TEXTURE_2D);
        
+       //Controle para ligar/Desligar as luzes no botão O, pois deixa muito lento.
        if(key.isLightOn){
             gl.glEnable(GL.GL_LIGHTING);
             gl.glEnable(GL.GL_LIGHT1);
@@ -95,10 +95,9 @@ public class OpenGLEvent implements GLEventListener{
        drawCube(gl);
        pers.inserir(gl);
        
-        pers.insereDummy(gl, 9,6);
-        pers.insereDummy(gl, -6,6);
-        pers.ocupado[9+(pers.ocupado.length/2)][6+(pers.ocupado.length/2)] = true;
-        pers.ocupado[-6+(pers.ocupado.length/2)][6+(pers.ocupado.length/2)] = true;
+       //Insere os objetos parados no tabuleiro
+       pers.insereDummy(gl, 9,6);
+       pers.insereDummy(gl, -6,6);
        
        gl.glFlush();
     }
@@ -152,7 +151,6 @@ public class OpenGLEvent implements GLEventListener{
         texturaCubo.bind();
         gl.glBegin(GL.GL_QUADS);
             gl.glColor3f(1.0f, 1.0f, 1.0f);
-//            drawFace(gl, topRightCima, topLeftCima, topLeftBaixo, topRightBaixo);
             gl.glTexCoord2d(1, 1);
             gl.glVertex3f(topRightCima.x, topRightCima.y, topRightCima.z);   // Top Right
             gl.glTexCoord2d(0, 1);
@@ -174,8 +172,6 @@ public class OpenGLEvent implements GLEventListener{
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
         GL gl = drawable.getGL();
-        
-
         if (height <= 0) { // avoid a divide by zero error!
             height = 1;
         }
@@ -207,7 +203,6 @@ public class OpenGLEvent implements GLEventListener{
     }
     
     public void addLight(GL gl){
-        
         if(luzX > 10 && dirX == 1){
             dirX = -1;
         }
@@ -224,33 +219,20 @@ public class OpenGLEvent implements GLEventListener{
         }
         luzY += 1.6 * dirY;
         
-        float [] fpos =  {luzX, luzY, key.luzZ, 0.4f};
-        FloatBuffer glLightPos = FloatBuffer.wrap(fpos);
-        gl.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, glLightPos);
+        float [] valueArray =  {luzX, luzY, key.luzZ, 0.4f};
+        FloatBuffer values = FloatBuffer.wrap(valueArray);
+        gl.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, values);
 
-        fpos = new float [] {1f, 1f, 1f, 0.5f};
-        glLightPos = FloatBuffer.wrap(fpos);
-        gl.glLightfv(GL.GL_LIGHT0, GL.GL_SPOT_CUTOFF, glLightPos);
+        valueArray = new float [] {1f, 1f, 1f, 0.5f};
+        values = FloatBuffer.wrap(valueArray);
+        gl.glLightfv(GL.GL_LIGHT0, GL.GL_SPOT_CUTOFF, values);
         
-        fpos = new float [] {10f, 10f, 1f, 0.6f};
-        glLightPos = FloatBuffer.wrap(fpos);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, glLightPos);
+        valueArray = new float [] {10f, 10f, 1f, 0.6f};
+        values = FloatBuffer.wrap(valueArray);
+        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, values);
         
-        fpos = new float [] {1f, 1f, 1f, 0f};
-        glLightPos = FloatBuffer.wrap(fpos);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, glLightPos);
-       
+        valueArray = new float [] {1f, 1f, 1f, 0f};
+        values = FloatBuffer.wrap(valueArray);
+        gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, values);
     }
-
-    private void ocupaDummy1(Personagem pers) {
-//        //Ocupa em Y
-//        pers.ocupado[-3+pers.ocupado.length/2][6+pers.ocupado.length/2] = true;
-//        pers.ocupado[-3+pers.ocupado.length/2][5+pers.ocupado.length/2] = true;
-//        pers.ocupado[-3+pers.ocupado.length/2][3+pers.ocupado.length/2] = true;
-//        pers.ocupado[-3+pers.ocupado.length/2][2+pers.ocupado.length/2] = true;
-//        pers.ocupado[-3+pers.ocupado.length/2][1+pers.ocupado.length/2] = true;
-//        
-//        //Ocupa em X
-    }
-    
 }

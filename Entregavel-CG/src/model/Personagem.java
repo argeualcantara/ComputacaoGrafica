@@ -36,6 +36,7 @@ public class Personagem {
     public int eyeZ;
     public int upx;
     public int upy;
+    //Matriz que armazena as posições ocupadas com true
     public boolean [][] ocupado;
     public Personagem(GL gl) throws IOException {
         super();
@@ -49,6 +50,7 @@ public class Personagem {
         posY = -12;
         posZ = 4;
         
+        //Marca a posição inicial do ator como ocupada
         ocupado[posX+(ocupado.length/2)] [posY+(ocupado.length/2)] = true;
         
         eyeX = posX;
@@ -80,9 +82,12 @@ public class Personagem {
     }
     
     public void andar(){
+        //Os IF's verificam se a posição a ser ocupada pelo ator está ocupada por outro objeto.
+        //Posição ocupada dos objetos é definida no metodo init da classe OpenGLEvent
+        //Podendo andar a posição atual é marcada como desocupada e a próxima como ocupada.
+        //Os magic numbers -12 e 12 são os limites do tabuleiro.
         switch(dir){
             case 'N':
-                
                 if(posY+3 <= 12 && !ocupado[posX+(ocupado.length/2)] [posY+3+(ocupado.length/2)]){
                     ocupado[posX+(ocupado.length/2)] [posY+(ocupado.length/2)] = false;
                     ocupado[posX+(ocupado.length/2)] [posY+3+(ocupado.length/2)] = true;
