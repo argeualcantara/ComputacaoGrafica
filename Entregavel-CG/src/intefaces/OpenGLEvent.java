@@ -43,7 +43,6 @@ public class OpenGLEvent implements GLEventListener{
     int dirX = 1;
     int dirY = 1;
     
-    
     public OpenGLEvent(InputEvent key, Ponto p1, Ponto p2){
         this.key = key;
         this.p1 = p1;
@@ -58,7 +57,7 @@ public class OpenGLEvent implements GLEventListener{
         GL gl = drawable.getGL();
         gl.setSwapInterval(1);
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        gl.glShadeModel(GL.GL_SMOOTH); 
+        gl.glShadeModel(GL.GL_SMOOTH);
         glu = new GLU();
         carregarTextura(gl, glu);
         Matriz mapa = new Matriz();
@@ -102,7 +101,7 @@ public class OpenGLEvent implements GLEventListener{
        gl.glEnable(GL.GL_DEPTH_TEST);
        gl.glEnable(GL.GL_TEXTURE_2D);
        
-       //Controle para ligar/Desligar as luzes no bot�o O, pois deixa muito lento.
+       //Controle para ligar/Desligar as luzes no botão O, pois deixa muito lento.
        if(key.isLightOn){
             gl.glEnable(GL.GL_LIGHTING);
             gl.glEnable(GL.GL_LIGHT1);
@@ -144,7 +143,6 @@ public class OpenGLEvent implements GLEventListener{
        try {
 		Thread.sleep(100);
 	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
        gl.glFlush();
