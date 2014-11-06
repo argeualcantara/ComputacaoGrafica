@@ -70,21 +70,20 @@ public class OpenGLEvent implements GLEventListener{
         }
         this.key.diglett = diglett;
         this.key.mew = mew;
-        InputStream is = getClass().getClassLoader().getResourceAsStream("sound"+File.separator+"battle_theme.mp3");
-        BufferedInputStream bis = new BufferedInputStream(is);
-        final Player mp3Player;
-        try {
-            mp3Player = new Player(bis);
-            new Thread(){public void run(){
-                try{
-                    mp3Player.play();
-                } catch(Exception e){
-                    e.printStackTrace();
-                }
-            }}.start();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+
+        new Thread(){public void run(){
+            try{
+	        	while(true){
+	        		InputStream is = getClass().getClassLoader().getResourceAsStream("sound"+File.separator+"battle_theme.mp3");
+                	BufferedInputStream bis = new BufferedInputStream(is);
+                	final Player mp3Player;
+                	mp3Player = new Player(bis);
+	        		mp3Player.play();
+	        	}
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+        }}.start();
     }
 
     @SuppressWarnings("empty-statement")
