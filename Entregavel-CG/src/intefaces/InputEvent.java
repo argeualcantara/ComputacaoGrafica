@@ -3,6 +3,7 @@ package intefaces;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import model.Personagem;
+import model.Pokemon;
 
 /**
  *
@@ -44,7 +45,8 @@ public class InputEvent implements KeyListener{
     
     public boolean isWireFrame = false;
     
-    public Personagem personagem;
+    public Pokemon diglett;
+    public Pokemon mew;
     float luzZ;
     public boolean fp;
     public boolean isLightOn = true;
@@ -82,7 +84,7 @@ public class InputEvent implements KeyListener{
         upy_INICIAL = upy;
         upz_INICIAL = upz;
         
-        luzZ = 400;
+        luzZ = 20;
         fp = false;
         
     }
@@ -216,24 +218,33 @@ public class InputEvent implements KeyListener{
                 break;
                 
             case KeyEvent.VK_UP:
-                personagem.andar();
+                diglett.andar();
                 break;
             case KeyEvent.VK_RIGHT:
-                personagem.virarDireita();
+                diglett.virarDireita();
                 break;
             case KeyEvent.VK_LEFT:
-                personagem.virarEsquerda();
+                diglett.virarEsquerda();
+                break;
+            case KeyEvent.VK_Y:
+                mew.andar();
+                break;
+            case KeyEvent.VK_J:
+                mew.virarDireita();
+                break;
+            case KeyEvent.VK_G:
+                mew.virarEsquerda();
                 break;
             case KeyEvent.VK_PAGE_UP:
-                personagem.sobe();
+                diglett.sobe();
                 break;
             case KeyEvent.VK_PAGE_DOWN:
-                personagem.desce();
+                diglett.desce();
                 break;
-            case KeyEvent.VK_1: luzZ = 100; break;
-            case KeyEvent.VK_2: luzZ = 200; break;
-            case KeyEvent.VK_3: luzZ = 300; break;
-            case KeyEvent.VK_4: luzZ = 400; break;
+            case KeyEvent.VK_1: luzZ = 10; break;
+            case KeyEvent.VK_2: luzZ = 15; break;
+            case KeyEvent.VK_3: luzZ = 20; break;
+            case KeyEvent.VK_4: luzZ = 25; break;
             case KeyEvent.VK_8:
             case KeyEvent.VK_ASTERISK:
             case KeyEvent.VK_MULTIPLY: this.fp = !fp;break;

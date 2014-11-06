@@ -3,8 +3,11 @@ package intefaces;
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,7 +16,11 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
+import model.Matriz;
 import model.Personagem;
+import model.Pokemon;
 import model.Ponto;
 
 /**
@@ -26,7 +33,8 @@ public class OpenGLEvent implements GLEventListener{
     private final Ponto p2;
     private GLU glu;
     private Texture texturaCubo;
-    private Personagem pers;
+    private Pokemon diglett;
+    private Pokemon mew;
     private float luzY;
     private float luzX;
     int dirX = 1;
@@ -50,14 +58,31 @@ public class OpenGLEvent implements GLEventListener{
         gl.glShadeModel(GL.GL_SMOOTH); 
         glu = new GLU();
         carregarTextura(gl, glu);
+        Matriz mapa = new Matriz();
         try {
-            pers = new Personagem(gl);
+            diglett = new Pokemon(gl, mapa, "src"+File.separator+"obj"+File.separator+"diglett"+File.separator+"Diglett", 0, 9, 'S');
+            mew = new Pokemon(gl, mapa, "src"+File.separator+"obj"+File.separator+"mew"+File.separator+"BR_Mew", 0, -12, 'N');
         } catch (Exception ex) {
             Logger.getLogger(OpenGLEvent.class.getName()).log(Level.SEVERE, null, ex);
         }
-        this.key.personagem = pers;
-        pers.ocupado[9+(pers.ocupado.length/2)][6+(pers.ocupado.length/2)] = true;
-        pers.ocupado[-6+(pers.ocupado.length/2)][6+(pers.ocupado.length/2)] = true;
+        this.key.diglett = diglett;
+        this.key.mew = mew;
+        Player player;
+        InputStream is = getClass().getClassLoader().getResourceAsStream("sound"+File.separator+"battle_theme.mp3");
+        BufferedInputStream bis = new BufferedInputStream(is);
+        final Player mp3Player;
+        try {
+            mp3Player = new Player(bis);
+            new Thread(){public void run(){
+                try{
+                    mp3Player.play();
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+            }}.start();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @SuppressWarnings("empty-statement")
@@ -87,17 +112,14 @@ public class OpenGLEvent implements GLEventListener{
        }
        
        if(key.fp){
-           glu.gluLookAt(pers.eyeX, pers.eyeY, pers.eyeZ, pers.centroX, pers.centroY, pers.centroZ, pers.upx, pers.upy, key.upz);
+           glu.gluLookAt(diglett.eyeX, diglett.eyeY, diglett.eyeZ, diglett.centroX, diglett.centroY, diglett.centroZ, diglett.upx, diglett.upy, key.upz);
        }else{
            glu.gluLookAt(key.eyeX, key.eyeY, key.eyeZ, key.centroX, key.centroY, key.centroZ, key.upx, key.upy, key.upz);
        }
        
        drawCube(gl);
-       pers.inserir(gl);
-       
-       //Insere os objetos parados no tabuleiro
-       pers.insereDummy(gl, 9,6);
-       pers.insereDummy(gl, -6,6);
+       diglett.inserir(gl);
+       mew.inserir(gl);
        
        gl.glFlush();
     }
@@ -180,7 +202,7 @@ public class OpenGLEvent implements GLEventListener{
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
         
-        glu.gluPerspective(60.0f, h, 1.0, 500.0);
+        glu.gluPerspective(30.0f, h, 1.0, 500.0);
         
         gl.glMatrixMode(GL.GL_MODELVIEW);
         gl.glLoadIdentity();
@@ -193,10 +215,12 @@ public class OpenGLEvent implements GLEventListener{
     private void carregarTextura(GL gl, GLU glu) {
 
         try {
-            BufferedImage im = ImageIO.read(new File("img/cb.jpg"));
-            this.texturaCubo = TextureIO.newTexture(im, false);
+            BufferedImage im = ImageIO.read(new File("src/img/stadium.jpg"));
+            this.texturaCubo = TextureIO.newTexture(im, true);
             this.texturaCubo.setTexParameteri(GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
             this.texturaCubo.setTexParameteri(GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+            this.texturaCubo.setTexParameteri(GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
+            this.texturaCubo.setTexParameteri(GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
         } catch (Exception ex) {
             Logger.getLogger(OpenGLEvent.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -223,9 +247,15 @@ public class OpenGLEvent implements GLEventListener{
         FloatBuffer values = FloatBuffer.wrap(valueArray);
         gl.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, values);
 
-        valueArray = new float [] {1f, 1f, 1f, 0.5f};
+        gl.glLighti(GL.GL_LIGHT0, GL.GL_SPOT_CUTOFF, 10);
+        
+        gl.glLighti(GL.GL_LIGHT0, GL.GL_SPOT_EXPONENT, 25);
+        
+        valueArray = new float [] {-luzX, -luzY, -key.luzZ, .0f};
+        
+        
         values = FloatBuffer.wrap(valueArray);
-        gl.glLightfv(GL.GL_LIGHT0, GL.GL_SPOT_CUTOFF, values);
+        gl.glLightfv(GL.GL_LIGHT0, GL.GL_SPOT_DIRECTION, values);
         
         valueArray = new float [] {10f, 10f, 1f, 0.6f};
         values = FloatBuffer.wrap(valueArray);
@@ -234,5 +264,9 @@ public class OpenGLEvent implements GLEventListener{
         valueArray = new float [] {1f, 1f, 1f, 0f};
         values = FloatBuffer.wrap(valueArray);
         gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, values);
+
+        gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, FloatBuffer.wrap(new float [] {0.3f, 0.3f, 0.3f, 0.2f}));
+        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, FloatBuffer.wrap(new float [] {0.3f, 0.5f, 0.5f, 0.6f}));
+        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float [] {0.1f, 1.0f, 0.4f, 0.9f}));
     }
 }

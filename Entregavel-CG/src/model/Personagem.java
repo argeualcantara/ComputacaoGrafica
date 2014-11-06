@@ -10,10 +10,11 @@ import com.sun.opengl.util.texture.TextureIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
-import obj.ObjLoader;
-import obj.ObjModel;
+import objutils.ObjLoader;
+import objutils.ObjModel;
 
 /**
  *
@@ -29,7 +30,7 @@ public class Personagem {
     public int centroY;
     public int centroZ;
     char dir = 'N';
-    int count = 0;
+//    int count = 0;
     private int anguloRotacao;
     public int eyeX;
     public int eyeY;
@@ -46,6 +47,7 @@ public class Personagem {
         this.tex = TextureIO.newTexture(im, true);
         this.tex.setTexParameteri(GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
         this.tex.setTexParameteri(GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+
         posX = 3;
         posY = -12;
         posZ = 4;
@@ -66,7 +68,14 @@ public class Personagem {
     public void inserir(GL gl) {
         
         gl.glEnable(GL.GL_TEXTURE_2D);
+        gl.glEnable(GL.GL_COLOR_MATERIAL);
         gl.glColor3f(1f, 1f, 1f);
+        gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, FloatBuffer.wrap(new float [] {0.5f,0.5f,0.5f,0.0f}));
+        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, FloatBuffer.wrap(new float [] {.5f,.5f,.5f,0.0f}));
+        gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, FloatBuffer.wrap(new float [] {.5f,.5f,.5f,0.0f}));
+        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float [] {1f,1f,1.0f,1.0f}));
+
+        gl.glColorMaterial(GL.GL_FRONT, GL.GL_DIFFUSE);
         tex.enable();
         tex.bind();
 
@@ -281,17 +290,28 @@ public class Personagem {
         }
     }
     
-    public void insereDummy(GL gl, int x, int y){
-            gl.glEnable(GL.GL_TEXTURE_2D);
-            gl.glColor3f(1f, 1f, 1f);
+    public void insereDummy(GL gl, int x, int y, char dir){
             tex.enable();
             tex.bind();
-
+            gl.glColor3f(0.2f,1f,0.0f);
             gl.glPushMatrix();
                 gl.glTranslatef(x, y, 4);
                 gl.glRotatef(100.0f, 1.0f, 0.0f, 0.0f);
                 gl.glRotatef(180.0f , 0.0f, 1.0f, 0.0f);
+                switch(dir){
+                    case 'N': break;
+                    case 'S': gl.glRotatef(180.0f , 0.0f, 1.0f, 0.0f); break;
+                    case 'L': gl.glRotatef(-90.0f , 0.0f, 1.0f, 0.0f); break;
+                    case 'O': gl.glRotatef(90.0f , 0.0f, 1.0f, 0.0f); break;
+                }
                 gl.glScalef(0.002f, 0.002f, 0.002f);
+                gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, FloatBuffer.wrap(new float [] {0.5f,0.5f,0.0f,0.2f}));
+                gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, FloatBuffer.wrap(new float [] {0.5f,0.5f,0.0f,0.6f}));
+                gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, FloatBuffer.wrap(new float [] {1f,1f,0.9f,0.9f}));
+                gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float [] {0.4f,1f,0.0f,0.8f}));
+                
+                gl.glColorMaterial(GL.GL_FRONT, GL.GL_DIFFUSE);
+                gl.glEnable(GL.GL_COLOR_MATERIAL);
                 obj.render(gl);
             gl.glPopMatrix();
             
