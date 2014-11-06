@@ -48,10 +48,11 @@ public class Pokemon {
     public char PROG = 'A';
     public OBJModelNew loader;
     int offset;
-    //Matriz que armazena as posi��es ocupadas com true
+    //Matriz que armazena as posições ocupadas pelo tipo de objeto
     public Matriz mapa;
 	public boolean isDamaged;
 	public boolean isAttacking;
+	private static final int CONSTANTE_CENTRO_FP = 3;
     public Pokemon(GL gl, Matriz mapa, String path, int iniX, int iniY, char dir) throws IOException {
         super();
         this.mapa = mapa;
@@ -62,8 +63,8 @@ public class Pokemon {
         }
         this.loader = new OBJModelNew(path, 1.5f, gl, true);
         
-        this.dir = dir;
-        posX = iniX;
+       	this.dir = dir;
+		posX = iniX;
         posY = iniY;
         posZ = 4;
         
@@ -71,17 +72,16 @@ public class Pokemon {
         mapa.ocupado[posX+offset] [posY+offset] = Matriz.POKEMON;
         
         switch(this.dir){
-        case'N':centroX = eyeX; centroY = eyeY+10;break;
-        case'S':anguloRotacao = 180; centroX = eyeX;centroY = eyeY-10;break;
-        case'L':anguloRotacao = -90; centroX = eyeX +10;centroY = eyeY;break;
-        case'O':anguloRotacao = 90; centroX = eyeX -10;centroY = eyeY;break;
+	        case'N':centroX = eyeX; centroY = eyeY+CONSTANTE_CENTRO_FP;break;
+	        case'S':anguloRotacao = 180; centroX = eyeX;centroY = eyeY-CONSTANTE_CENTRO_FP;break;
+	        case'L':anguloRotacao = -90; centroX = eyeX +CONSTANTE_CENTRO_FP;centroY = eyeY;break;
+	        case'O':anguloRotacao = 90; centroX = eyeX -CONSTANTE_CENTRO_FP;centroY = eyeY;break;
         }
-        
         eyeX = posX;
         eyeY = posY;
-        eyeZ = posZ+3;
+        eyeZ = posZ;
         
-        centroZ = eyeZ+2;
+        centroZ = posZ;
         upx = 0;
         upy = 1;
     }
@@ -106,10 +106,10 @@ public class Pokemon {
     }
     
     public void andar(){
-        //Os IF's verificam se a posi��o a ser ocupada pelo ator est� ocupada por outro objeto.
-        //Posi��o ocupada dos objetos � definida no metodo init da classe OpenGLEvent
-        //Podendo andar a posi��o atual � marcada como desocupada e a pr�xima como ocupada.
-        //Os magic numbers -12 e 12 s�o os limites do tabuleiro.
+        //Os IF's verificam se a posição a ser ocupada pelo ator está ocupada por outro objeto.
+        //Posição ocupada dos objetos é definida no metodo init da classe OpenGLEvent
+        //Podendo andar a posição atual é marcada como desocupada e a próxima como ocupada.
+        //Os magic numbers -12 e 12 são os limites do tabuleiro.
         switch(dir){
             case 'N':
                 if(posY+3 <= 12 && mapa.ocupado[posX+offset] [posY+3+offset] != Matriz.POKEMON){
@@ -119,14 +119,14 @@ public class Pokemon {
                     eyeX = posX;
                     eyeY = posY;
                     centroX = eyeX;
-                    centroY = eyeY+10;
+                    centroY = eyeY+CONSTANTE_CENTRO_FP;
                     upx = 0;
                     upy = 1;
                 }else{
                     if(posY+3 > 12){
                         System.out.println("Fora do tabuleiro.");
                     }else{
-                        System.out.println("Posi��o ocupada.");
+                        System.out.println("Posição ocupada.");
                     }
                 }
                 break;
@@ -138,14 +138,14 @@ public class Pokemon {
                     eyeX = posX;
                     eyeY = posY;
                     centroX = eyeX;
-                    centroY = eyeY-10;
+                    centroY = eyeY-CONSTANTE_CENTRO_FP;
                     upx = 0;
                     upy = 1;
                 }else{
                     if(posY-3 < -12){
                         System.out.println("Fora do tabuleiro.");
                     }else{
-                        System.out.println("Posi��o ocupada.");
+                        System.out.println("Posição ocupada.");
                     }
                 }
                 
@@ -157,7 +157,7 @@ public class Pokemon {
                     mapa.ocupado[posX+offset] [posY+offset] = Matriz.POKEMON;
                     eyeX = posX;
                     eyeY = posY;
-                    centroX = posX - 20;
+                    centroX = posX - CONSTANTE_CENTRO_FP;
                     centroY = posY;
                     upx = 1;
                     upy = 0;
@@ -165,7 +165,7 @@ public class Pokemon {
                     if(posX-3 < -12){
                         System.out.println("Fora do tabuleiro.");
                     }else{
-                        System.out.println("Posi��o ocupada.");
+                        System.out.println("Posição ocupada.");
                     }
                 }
                 break;
@@ -176,7 +176,7 @@ public class Pokemon {
                     mapa.ocupado[posX+offset] [posY+offset] = Matriz.POKEMON;
                     eyeX = posX;
                     eyeY = posY;
-                    centroX = posX + 10;
+                    centroX = posX + CONSTANTE_CENTRO_FP;
                     centroY = posY;
                     upx = 1;
                     upy = 0;
@@ -184,7 +184,7 @@ public class Pokemon {
                     if(posX+3 > 12){
                         System.out.println("Fora do tabuleiro.");
                     }else{
-                        System.out.println("Posi��o ocupada.");
+                        System.out.println("Posição ocupada.");
                     }
                 }
                 break;
@@ -217,8 +217,8 @@ public class Pokemon {
                 dir = 'O';
                 eyeX = posX;
                 eyeY = posY;
-                centroX = posX + 10;
-                centroY = posY;
+                centroX = eyeX + CONSTANTE_CENTRO_FP;
+                centroY = eyeY;
                 upx = 1;
                 upy = 0;
                 break;
@@ -226,8 +226,8 @@ public class Pokemon {
                 dir = 'L';
                 eyeX = posX;
                 eyeY = posY;
-                centroX = posX - 10;
-                centroY = posY;
+                centroX = eyeX - CONSTANTE_CENTRO_FP;
+                centroY = eyeY;
                 upx = 1;
                 upy = 0;
                 break;
@@ -236,16 +236,16 @@ public class Pokemon {
                 eyeX = posX;
                 eyeY = posY;
                 centroX = eyeX;
-                centroY = eyeY-10;
+                centroY = eyeY-CONSTANTE_CENTRO_FP;
                 upx = 0;
-                upy = -1;
+                upy = 1;
                 break;
             case 'L':
                 dir = 'N';
                 eyeX = posX;
                 eyeY = posY;
                 centroX = eyeX;
-                centroY = eyeY+10;
+                centroY = eyeY+CONSTANTE_CENTRO_FP;
                 upx = 0;
                 upy = 1;
                 break;
@@ -264,8 +264,8 @@ public class Pokemon {
                 dir = 'L';
                 eyeX = posX;
                 eyeY = posY;
-                centroX = posX - 10;
-                centroY = posY;
+                centroX = eyeX - CONSTANTE_CENTRO_FP;
+                centroY = eyeY;
                 upx = 1;
                 upy = 0;
                 break;
@@ -273,8 +273,8 @@ public class Pokemon {
                 dir = 'O';
                 eyeX = posX;
                 eyeY = posY;
-                centroX = posX + 10;
-                centroY = posY;
+                centroX = eyeX + CONSTANTE_CENTRO_FP;
+                centroY = eyeY;
                 upx = 1;
                 upy = 0;
                 break;
@@ -283,7 +283,7 @@ public class Pokemon {
                 eyeX = posX;
                 eyeY = posY;
                 centroX = eyeX;
-                centroY = eyeY+10;
+                centroY = eyeY+CONSTANTE_CENTRO_FP;
                 upx = 0;
                 upy = 1;
                 break;
@@ -292,9 +292,9 @@ public class Pokemon {
                 eyeX = posX;
                 eyeY = posY;
                 centroX = eyeX;
-                centroY = eyeY-10;
+                centroY = eyeY-CONSTANTE_CENTRO_FP;
                 upx = 0;
-                upy = -1;
+                upy = 1;
                 break;
         }
     }
