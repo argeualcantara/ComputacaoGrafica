@@ -2,6 +2,7 @@ package intefaces;
 
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
+
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -11,11 +12,13 @@ import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
+
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 import model.Matriz;
@@ -67,7 +70,6 @@ public class OpenGLEvent implements GLEventListener{
         }
         this.key.diglett = diglett;
         this.key.mew = mew;
-        Player player;
         InputStream is = getClass().getClassLoader().getResourceAsStream("sound"+File.separator+"battle_theme.mp3");
         BufferedInputStream bis = new BufferedInputStream(is);
         final Player mp3Player;
@@ -101,7 +103,7 @@ public class OpenGLEvent implements GLEventListener{
        gl.glEnable(GL.GL_DEPTH_TEST);
        gl.glEnable(GL.GL_TEXTURE_2D);
        
-       //Controle para ligar/Desligar as luzes no botão O, pois deixa muito lento.
+       //Controle para ligar/Desligar as luzes no botï¿½o O, pois deixa muito lento.
        if(key.isLightOn){
             gl.glEnable(GL.GL_LIGHTING);
             gl.glEnable(GL.GL_LIGHT1);
@@ -118,9 +120,34 @@ public class OpenGLEvent implements GLEventListener{
        }
        
        drawCube(gl);
-       diglett.inserir(gl);
-       mew.inserir(gl);
        
+       if(diglett.isAttacking){
+    	   mew.isDamaged = diglett.atacar(gl, glu);
+       }
+       if(mew.isAttacking){
+    	   diglett.isDamaged = mew.atacar(gl, glu);
+       }
+       
+       if(diglett.isDamaged){
+    	  diglett.damage(gl);
+       }else{
+    	   gl.glDisable(GL.GL_COLOR_MATERIAL);
+    	   gl.glColor3f(1f, 1f, 1f);
+       }
+       diglett.inserir(gl);
+       if(mew.isDamaged){
+    	   mew.damage(gl);
+       }else{
+    	   gl.glDisable(GL.GL_COLOR_MATERIAL);
+    	   gl.glColor3f(1f, 1f, 1f);
+       }
+       mew.inserir(gl);
+       try {
+		Thread.sleep(100);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
        gl.glFlush();
     }
 
@@ -202,7 +229,7 @@ public class OpenGLEvent implements GLEventListener{
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
         
-        glu.gluPerspective(30.0f, h, 1.0, 500.0);
+        glu.gluPerspective(35.0f, h, 1.0, 500.0);
         
         gl.glMatrixMode(GL.GL_MODELVIEW);
         gl.glLoadIdentity();

@@ -5,10 +5,21 @@
  */
 package model;
 
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.glu.GLU;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 
+import javazoom.jl.player.Player;
 import objutils.OBJModelNew;
 
 import com.sun.opengl.util.texture.Texture;
@@ -39,6 +50,8 @@ public class Pokemon {
     int offset;
     //Matriz que armazena as posiï¿½ï¿½es ocupadas com true
     public Matriz mapa;
+	public boolean isDamaged;
+	public boolean isAttacking;
     public Pokemon(GL gl, Matriz mapa, String path, int iniX, int iniY, char dir) throws IOException {
         super();
         this.mapa = mapa;
@@ -49,48 +62,31 @@ public class Pokemon {
         }
         this.loader = new OBJModelNew(path, 1.5f, gl, true);
         
-//        this.obj = ObjLoader.loadObj("obj/gengar/Gengar.obj", "obj/gengar/Gangar.mtl", gl);
-//        BufferedImage im = ImageIO.read(new File("src/obj/gengar/Textures/GengarDh.jpeg"));
-//        this.tex1 = TextureIO.newTexture(im, true);
-//        this.tex1.setTexParameteri(GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
-//        this.tex1.setTexParameteri(GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-//        this.tex1.setTexParameterfv(GL.GL_AMBIENT, new float [] {0.5f, 0.5f, 0.5f}, 0);
-//        this.tex1.setTexParameterfv(GL.GL_DIFFUSE, new float [] {0.9f, 0.9f, 0.9f}, 0);
-//        this.tex1.setTexParameterfv(GL.GL_SPECULAR, new float [] {0.0f, 0.0f, 0.0f}, 0);
-        
-//        im = ImageIO.read(new File("src/obj/gengar/Textures/gengar_0_0.jpeg"));
-//        this.tex2 = TextureIO.newTexture(im, true);
-//        this.tex2.setTexParameteri(GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
-//        this.tex2.setTexParameteri(GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-//        this.tex2.setTexParameterfv(GL.GL_AMBIENT, new float [] {0.5f, 0.5f, 0.5f}, 0);
-//        this.tex2.setTexParameterfv(GL.GL_DIFFUSE, new float [] {0.9f, 0.9f, 0.9f}, 0);
-//        this.tex2.setTexParameterfv(GL.GL_SPECULAR, new float [] {0.0f, 0.0f, 0.0f}, 0);
         this.dir = dir;
-        switch(this.dir){
-	        case'N':break;
-	        case'S':anguloRotacao = 180;break;
-	        case'L':anguloRotacao = -90;break;
-	        case'O':anguloRotacao = 90;break;
-        }
         posX = iniX;
         posY = iniY;
-        posZ = 5;
+        posZ = 4;
         
         //Marca a posiï¿½ï¿½o inicial do ator como ocupada
         mapa.ocupado[posX+offset] [posY+offset] = Matriz.POKEMON;
         
+        switch(this.dir){
+        case'N':centroX = eyeX; centroY = eyeY+10;break;
+        case'S':anguloRotacao = 180; centroX = eyeX;centroY = eyeY-10;break;
+        case'L':anguloRotacao = -90; centroX = eyeX +10;centroY = eyeY;break;
+        case'O':anguloRotacao = 90; centroX = eyeX -10;centroY = eyeY;break;
+        }
+        
         eyeX = posX;
-        eyeY = posY-2;
+        eyeY = posY;
         eyeZ = posZ+3;
-        centroX = eyeX;
-        centroY = eyeY+5;
-        centroZ = 6;
+        
+        centroZ = eyeZ+2;
         upx = 0;
         upy = 1;
     }
 
     public void inserir(GL gl) {
-        
         gl.glPushMatrix();
             gl.glTranslatef(posX, posY, posZ);
             gl.glRotatef(100.0f, 1.0f, 0.0f, 0.0f);
@@ -103,55 +99,53 @@ public class Pokemon {
             	upy = 0;
             	upz = 1;
             }
-            
             gl.glRotatef(anguloRotacao, upx, upy, upz);
-//            gl.glScalef(0.22f, 0.22f, 0.22f);
             loader.draw(gl);
         gl.glPopMatrix();
         
     }
     
     public void andar(){
-        //Os IF's verificam se a posição a ser ocupada pelo ator está ocupada por outro objeto.
-        //Posição ocupada dos objetos é definida no metodo init da classe OpenGLEvent
-        //Podendo andar a posição atual é marcada como desocupada e a próxima como ocupada.
-        //Os magic numbers -12 e 12 são os limites do tabuleiro.
+        //Os IF's verificam se a posiï¿½ï¿½o a ser ocupada pelo ator estï¿½ ocupada por outro objeto.
+        //Posiï¿½ï¿½o ocupada dos objetos ï¿½ definida no metodo init da classe OpenGLEvent
+        //Podendo andar a posiï¿½ï¿½o atual ï¿½ marcada como desocupada e a prï¿½xima como ocupada.
+        //Os magic numbers -12 e 12 sï¿½o os limites do tabuleiro.
         switch(dir){
             case 'N':
                 if(posY+3 <= 12 && mapa.ocupado[posX+offset] [posY+3+offset] != Matriz.POKEMON){
                     mapa.ocupado[posX+offset] [posY+offset] = ' ';
-                    mapa.ocupado[posX+offset] [posY+3+offset] = Matriz.POKEMON;
                     posY += 3;
+                    mapa.ocupado[posX+offset] [posY+offset] = Matriz.POKEMON;
                     eyeX = posX;
-                    eyeY = posY-2;
+                    eyeY = posY;
                     centroX = eyeX;
-                    centroY = eyeY+5;
+                    centroY = eyeY+10;
                     upx = 0;
                     upy = 1;
                 }else{
                     if(posY+3 > 12){
                         System.out.println("Fora do tabuleiro.");
                     }else{
-                        System.out.println("Posição ocupada.");
+                        System.out.println("Posiï¿½ï¿½o ocupada.");
                     }
                 }
                 break;
             case 'S':
                 if(posY-3 >= -12 && mapa.ocupado[posX+offset] [posY-3+offset] != Matriz.POKEMON){
                     mapa.ocupado[posX+offset] [posY+offset] = ' ';
-                    mapa.ocupado[posX+offset] [posY-3+offset] = Matriz.POKEMON;
                     posY -= 3;
+                    mapa.ocupado[posX+offset] [posY+offset] = Matriz.POKEMON;
                     eyeX = posX;
-                    eyeY = posY+2;
+                    eyeY = posY;
                     centroX = eyeX;
-                    centroY = eyeY-5;
+                    centroY = eyeY-10;
                     upx = 0;
                     upy = 1;
                 }else{
                     if(posY-3 < -12){
                         System.out.println("Fora do tabuleiro.");
                     }else{
-                        System.out.println("Posição ocupada.");
+                        System.out.println("Posiï¿½ï¿½o ocupada.");
                     }
                 }
                 
@@ -159,11 +153,11 @@ public class Pokemon {
             case 'L':
                 if(posX-3 >= -12 && mapa.ocupado[posX-3+offset] [posY+offset] != Matriz.POKEMON){
                     mapa.ocupado[posX+offset] [posY+offset] = ' ';
-                    mapa.ocupado[posX-3+offset] [posY+offset] = Matriz.POKEMON;
                     posX -= 3;
-                    eyeX = posX+2;
+                    mapa.ocupado[posX+offset] [posY+offset] = Matriz.POKEMON;
+                    eyeX = posX;
                     eyeY = posY;
-                    centroX = posX - 5;
+                    centroX = posX - 20;
                     centroY = posY;
                     upx = 1;
                     upy = 0;
@@ -171,18 +165,18 @@ public class Pokemon {
                     if(posX-3 < -12){
                         System.out.println("Fora do tabuleiro.");
                     }else{
-                        System.out.println("Posição ocupada.");
+                        System.out.println("Posiï¿½ï¿½o ocupada.");
                     }
                 }
                 break;
             case 'O':
                 if(posX+3 <= 12 && mapa.ocupado[posX+3+offset] [posY+offset] != Matriz.POKEMON){
                     mapa.ocupado[posX+offset] [posY+offset] = ' ';
-                    mapa.ocupado[posX+3+offset] [posY+offset] = Matriz.POKEMON;
                     posX += 3;
-                    eyeX = posX - 2;
+                    mapa.ocupado[posX+offset] [posY+offset] = Matriz.POKEMON;
+                    eyeX = posX;
                     eyeY = posY;
-                    centroX = posX + 5;
+                    centroX = posX + 10;
                     centroY = posY;
                     upx = 1;
                     upy = 0;
@@ -190,7 +184,7 @@ public class Pokemon {
                     if(posX+3 > 12){
                         System.out.println("Fora do tabuleiro.");
                     }else{
-                        System.out.println("Posição ocupada.");
+                        System.out.println("Posiï¿½ï¿½o ocupada.");
                     }
                 }
                 break;
@@ -221,18 +215,18 @@ public class Pokemon {
         switch(dir){
             case 'N':
                 dir = 'O';
-                eyeX = posX - 2;
+                eyeX = posX;
                 eyeY = posY;
-                centroX = posX + 5;
+                centroX = posX + 10;
                 centroY = posY;
                 upx = 1;
                 upy = 0;
                 break;
             case 'S':
                 dir = 'L';
-                eyeX = posX+2;
+                eyeX = posX;
                 eyeY = posY;
-                centroX = posX - 5;
+                centroX = posX - 10;
                 centroY = posY;
                 upx = 1;
                 upy = 0;
@@ -240,18 +234,18 @@ public class Pokemon {
             case 'O':
                 dir = 'S';
                 eyeX = posX;
-                eyeY = posY+2;
+                eyeY = posY;
                 centroX = eyeX;
-                centroY = eyeY-5;
+                centroY = eyeY-10;
                 upx = 0;
                 upy = -1;
                 break;
             case 'L':
                 dir = 'N';
                 eyeX = posX;
-                eyeY = posY-2;
+                eyeY = posY;
                 centroX = eyeX;
-                centroY = eyeY+5;
+                centroY = eyeY+10;
                 upx = 0;
                 upy = 1;
                 break;
@@ -268,18 +262,18 @@ public class Pokemon {
         switch(dir){
             case 'N':
                 dir = 'L';
-                eyeX = posX+2;
+                eyeX = posX;
                 eyeY = posY;
-                centroX = posX - 5;
+                centroX = posX - 10;
                 centroY = posY;
                 upx = 1;
                 upy = 0;
                 break;
             case 'S':
                 dir = 'O';
-                eyeX = posX - 2;
+                eyeX = posX;
                 eyeY = posY;
-                centroX = posX + 5;
+                centroX = posX + 10;
                 centroY = posY;
                 upx = 1;
                 upy = 0;
@@ -287,18 +281,18 @@ public class Pokemon {
             case 'O':
                 dir = 'N';
                 eyeX = posX;
-                eyeY = posY-2;
+                eyeY = posY;
                 centroX = eyeX;
-                centroY = eyeY+5;
+                centroY = eyeY+10;
                 upx = 0;
                 upy = 1;
                 break;
             case 'L':
                 dir = 'S';
                 eyeX = posX;
-                eyeY = posY+2;
+                eyeY = posY;
                 centroX = eyeX;
-                centroY = eyeY-5;
+                centroY = eyeY-10;
                 upx = 0;
                 upy = -1;
                 break;
@@ -318,5 +312,113 @@ public class Pokemon {
             posZ = 4;
         }
     }
+    
+    public boolean atacar(GL gl, GLU glu){
+    	this.isAttacking = false;
+    	boolean acertou = false;
+    	int posx = posX+offset;
+    	int posy = posY+offset;
+    	char dir = this.dir;
+        gl.glBegin(GL.GL_LINES);
+        gl.glEnable(GL.GL_COLOR_MATERIAL);
+        gl.glColor3f(0.0f,0.0f,1.0f); //Blue
+    	gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,	FloatBuffer.wrap(new float[] { 0.0f, 0.0f, 0.8f, 0.0f }));
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, FloatBuffer.wrap(new float[] { .0f, .0f, .8f, 0.0f }));
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, FloatBuffer.wrap(new float[] { .0f, .0f, .8f, 0.0f }));
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float[] { 1f, 1f, 1.0f, 1.0f }));
+		gl.glColorMaterial(GL.GL_FRONT, GL.GL_DIFFUSE);
+        int posFim = 0;
+    	switch (dir) {
+			case 'N':
+				posFim = posy;
+				for (int i = posy+1; i < mapa.ocupado.length; i++) {
+					if(mapa.ocupado[posx][i] == Matriz.POKEMON){
+						acertou = true;
+						posFim = i - offset;
+					}
+				}
+				if(!acertou){
+					posFim = 15;
+				}
+				gl.glVertex3i(posX,posY+1,posZ);
+				gl.glVertex3i(posX,posFim,posZ);
+				break;
+			case 'S':
+				posFim = posy;
+				for (int i = posy-1; i > 0; i--) {
+					if(mapa.ocupado[posx][i] == Matriz.POKEMON){
+						acertou = true;
+						posFim = i - offset;
+					}
+				}
+				if(!acertou){
+					posFim = -15;
+				}
+				gl.glVertex3i(posX,posY-1,posZ);
+				gl.glVertex3i(posX,posFim,posZ);
+				break;
+			case 'O':
+				for (int i = posx+1; i < mapa.ocupado.length; i++) {
+					if(mapa.ocupado[i][posy] == Matriz.POKEMON){
+						acertou = true;
+						posFim = i - offset;
+					}
+				}
+				if(!acertou){
+					posFim = 15;
+				}
+				gl.glVertex3i(posX,posY,posZ);
+				gl.glVertex3i(posFim,posY,posZ);
+				break;
+			case 'L':
+				for (int i = posx-1; i > 0; i--) {
+					if(mapa.ocupado[i][posy] == Matriz.POKEMON){
+						acertou = true;
+						posFim = i - offset;
+					}
+				}
+				if(!acertou){
+					posFim = -15;
+				}
+				gl.glVertex3i(posX,posY,posZ);
+				gl.glVertex3i(posFim,posY,posZ);
+				break;
+		}
+    	gl.glEnd();
+    	gl.glColor3f(1.0f,1.0f,1.0f);
+    	try {
+        	AudioInputStream soundIn = AudioSystem.getAudioInputStream(new File("src"+File.separator+"sound"+File.separator+"laser.wav"));
+        	AudioFormat format = soundIn.getFormat();
+        	DataLine.Info info = new DataLine.Info(Clip.class, format);
+        	Clip clip = (Clip)AudioSystem.getLine(info);
+        	clip.open(soundIn);
+        	clip.start();
+        	Thread.sleep(100);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    	return acertou;
+    }
+    
+	public void damage(GL gl) {
+		this.isDamaged = false;
+		gl.glEnable(GL.GL_COLOR_MATERIAL);
+		gl.glColor3f(1f, 0f, 0f);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,	FloatBuffer.wrap(new float[] { 0.9f, 0.5f, 0.5f, 0.0f }));
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, FloatBuffer.wrap(new float[] { .5f, .5f, .5f, 0.0f }));
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, FloatBuffer.wrap(new float[] { .5f, .5f, .5f, 0.0f }));
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float[] { 1f, 1f, 1.0f, 1.0f }));
+		gl.glColorMaterial(GL.GL_FRONT, GL.GL_DIFFUSE);
+        try {
+        	AudioInputStream soundIn = AudioSystem.getAudioInputStream(new File("src"+File.separator+"sound"+File.separator+"impact.wav"));
+        	AudioFormat format = soundIn.getFormat();
+        	DataLine.Info info = new DataLine.Info(Clip.class, format);
+        	Clip clip = (Clip)AudioSystem.getLine(info);
+        	clip.open(soundIn);
+        	clip.start();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+	}
     
 }

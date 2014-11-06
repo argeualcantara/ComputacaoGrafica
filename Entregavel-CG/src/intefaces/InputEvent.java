@@ -12,7 +12,7 @@ import model.Pokemon;
 public class InputEvent implements KeyListener{
     double eyeX = 0;
     double eyeY = 0;
-    double eyeZ = 40;
+    double eyeZ = 55;
     double upx = 0;
     double upy = 1;
     double upz = 0;
@@ -36,7 +36,7 @@ public class InputEvent implements KeyListener{
     private double thz = 0;
     
     /**
-     * Variáveis contadoras para limitar os angulos entre 0 e 180
+     * Variï¿½veis contadoras para limitar os angulos entre 0 e 180
      */
     private double thxc = 0;
     private double thxc_INICIAL = 0;
@@ -52,7 +52,7 @@ public class InputEvent implements KeyListener{
     public boolean isLightOn = true;
 
     /**
-     * Posições iniciais dos vetores eye e up salvas para o botão R - reset
+     * Posiï¿½ï¿½es iniciais dos vetores eye e up salvas para o botï¿½o R - reset
      */
     public InputEvent (){
         eyeX_INICIAL = eyeX;
@@ -93,9 +93,9 @@ public class InputEvent implements KeyListener{
     }
 
     /**
-     * Para cada tecla de mover a camera são aplicadas as matrizes de rotação
-     * na posição da camera e do vetor up,
-     * por isso o centro do objeto está na posição 0,0,0.
+     * Para cada tecla de mover a camera sï¿½o aplicadas as matrizes de rotaï¿½ï¿½o
+     * na posiï¿½ï¿½o da camera e do vetor up,
+     * por isso o centro do objeto estï¿½ na posiï¿½ï¿½o 0,0,0.
      * @param e 
      */
     public void keyPressed(KeyEvent e) {
@@ -195,7 +195,7 @@ public class InputEvent implements KeyListener{
             case KeyEvent.VK_I:
                 eyeX = 0;
                 eyeY = 0;
-                eyeZ = 40;
+                eyeZ = 55;
                 upx = 0;
                 upy = 1;
                 upz = 0;
@@ -249,6 +249,8 @@ public class InputEvent implements KeyListener{
             case KeyEvent.VK_ASTERISK:
             case KeyEvent.VK_MULTIPLY: this.fp = !fp;break;
             case KeyEvent.VK_O: this.isLightOn = !isLightOn;break;
+            case KeyEvent.VK_SPACE: diglett.isAttacking = true;break;
+            case KeyEvent.VK_CONTROL: mew.isAttacking = true;break;
         }
         
     }
