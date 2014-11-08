@@ -300,8 +300,8 @@ public class OpenGLEvent implements GLEventListener{
     private void newGame(GL gl) {
         Matriz mapa = new Matriz();
         try {
-            diglett = new Pokemon(gl, mapa, "src"+File.separator+"obj"+File.separator+"diglett"+File.separator+"Diglett", 0, 9, 'S');
-            mew = new Pokemon(gl, mapa, "src"+File.separator+"obj"+File.separator+"mew"+File.separator+"BR_Mew", 0, -12, 'N');
+            diglett = new Pokemon(gl, mapa, "src"+File.separator+"obj"+File.separator+"diglett"+File.separator+"Diglett", 0, 9, 'S', 1.5f);
+            mew = new Pokemon(gl, mapa, "src"+File.separator+"obj"+File.separator+"mew"+File.separator+"BR_Mew", 0, -12, 'N', 2.0f);
         } catch (Exception ex) {
             Logger.getLogger(OpenGLEvent.class.getName()).log(Level.SEVERE, null, ex);
         }

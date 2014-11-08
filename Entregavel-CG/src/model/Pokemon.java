@@ -52,7 +52,7 @@ public class Pokemon {
     public boolean isDead = false;
     private static final int CONSTANTE_CENTRO_FP = 3;
     private int lifesLeft = 3;
-    public Pokemon(GL gl, Matriz mapa, String path, int iniX, int iniY, char dir) throws IOException {
+    public Pokemon(GL gl, Matriz mapa, String path, int iniX, int iniY, char dir, float scale) throws IOException {
         super();
         this.mapa = mapa;
         this.offset = mapa.ocupado.length/2;
@@ -60,7 +60,7 @@ public class Pokemon {
         if(path.contains("BR_")){
             PROG = 'B';
         }
-        this.loader = new OBJModelNew(path, 1.5f, gl, true);
+        this.loader = new OBJModelNew(path, scale, gl, true);
         
        	this.dir = dir;
 	posX = iniX;
