@@ -1,5 +1,6 @@
 package intefaces;
 
+import com.sun.opengl.util.GLUT;
 import com.sun.opengl.util.j2d.TextRenderer;
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
@@ -40,7 +41,7 @@ public class OpenGLEvent implements GLEventListener{
     private float luzX;
     int dirX = 1;
     int dirY = 1;
-    private TextRenderer renderer;
+
     public OpenGLEvent(InputEvent key, Ponto p1, Ponto p2){
         this.key = key;
         this.p1 = p1;
@@ -58,15 +59,7 @@ public class OpenGLEvent implements GLEventListener{
         gl.glShadeModel(GL.GL_SMOOTH);
         glu = new GLU();
         carregarTextura(gl, glu);
-        renderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 10));
-        renderer.beginRendering(drawable.getWidth(), drawable.getHeight());
-        // optionally set the color
-        renderer.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-        renderer.draw3D("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0f, 0f, 30f, 0.5f);
-        // ... more draw commands, color changes, etc.
-//        renderer.endRendering();
         newGame(gl);
-
         new Thread(){public void run(){
             try{
                 while(true){
@@ -86,6 +79,7 @@ public class OpenGLEvent implements GLEventListener{
     @SuppressWarnings("empty-statement")
     public void display(GLAutoDrawable drawable) {
        GL gl = drawable.getGL();
+       
        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
        gl.glLoadIdentity();
        
@@ -148,6 +142,21 @@ public class OpenGLEvent implements GLEventListener{
 	} catch (InterruptedException e) {
 		e.printStackTrace();
 	}
+
+       if(mew.isDead){
+           GLUT glut = new GLUT();
+           gl.glColor3f (1.0f, 1.0f, 1.0f);  // Set text e.color to black
+           gl.glRasterPos3i(-3, -16, 20); // set position
+           
+            glut.glutBitmapString(5, "Diglett Wins");
+
+       }else if (diglett.isDead){
+           GLUT glut = new GLUT();
+           gl.glColor3f (1.0f, 1.0f, 1.0f);  // Set text e.color to black
+           gl.glRasterPos3i(-3, -16, 20); // set position
+           
+            glut.glutBitmapString(5, "Mew Wins");
+       }
        gl.glFlush();
     }
 
