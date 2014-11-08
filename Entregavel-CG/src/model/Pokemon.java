@@ -34,8 +34,7 @@ public class Pokemon {
     public int centroX;
     public int centroY;
     public int centroZ;
-    char dir = 'N';
-    int count = 0;
+    char dir;
     private int anguloRotacao;
     public int eyeX;
     public int eyeY;
@@ -52,6 +51,7 @@ public class Pokemon {
     public boolean isDead = false;
     private static final int CONSTANTE_CENTRO_FP = 3;
     private int lifesLeft = 3;
+    public boolean isFirstPerson = false;
     public Pokemon(GL gl, Matriz mapa, String path, int iniX, int iniY, char dir, float scale) throws IOException {
         super();
         this.mapa = mapa;
@@ -466,7 +466,7 @@ public class Pokemon {
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, FloatBuffer.wrap(new float[] { .5f, .0f, .0f, 0.0f }));
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float[] { 1f, 0f, 0f, 0.5f }));
 		gl.glColorMaterial(GL.GL_FRONT, GL.GL_DIFFUSE);
-                drawCube(gl, new Ponto(posx-1, posy, posz+1), new Ponto(posx, posy+0.5f, posz+1.5f));          
+                drawCube(gl, new Ponto(posx-1.5f, posy, posz+1), new Ponto(posx-0.5f, posy+0.5f, posz+1.5f));          
 //                if(this.PROG == 'A'){
 //                    gl.glRotatef(90f, 1, 0, 0);
 //                }
@@ -480,7 +480,7 @@ public class Pokemon {
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, FloatBuffer.wrap(new float[] { .5f, .5f, .0f, 0.0f }));
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float[] { 1f, 1f, 0f, 0.5f }));
 		gl.glColorMaterial(GL.GL_FRONT, GL.GL_DIFFUSE);
-                drawCube(gl, new Ponto(posx, posy, posz+1), new Ponto(posx+1, posy+0.5f, posz+1.5f));
+                drawCube(gl, new Ponto(posx-0.5f, posy, posz+1), new Ponto(posx+0.5f, posy+0.5f, posz+1.5f));
 //                if(this.PROG == 'A'){
 //                    gl.glRotatef(100f, 1, 0, 0);
 //                }
@@ -494,7 +494,7 @@ public class Pokemon {
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, FloatBuffer.wrap(new float[] { .0f, .8f, .0f, 0.0f }));
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float[] { 0.0f, 1f, 0.0f, 0.5f }));
 		gl.glColorMaterial(GL.GL_FRONT, GL.GL_DIFFUSE);
-                drawCube(gl, new Ponto(posx+1, posy, posz+1), new Ponto(posx +2f, posy+0.5f, posz+1.5f));
+                drawCube(gl, new Ponto(posx+0.5f, posy, posz+1), new Ponto(posx +1.5f, posy+0.5f, posz+1.5f));
 //                if(this.PROG == 'A'){
 //                    gl.glRotatef(100f, 1, 0, 0);
 //                }

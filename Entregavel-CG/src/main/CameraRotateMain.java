@@ -18,7 +18,7 @@ public class CameraRotateMain{
     private static GLCanvas canvas;
     
     public static void main(String[] args) {
-        Frame frame = new Frame("Planes of war");
+        Frame frame = new Frame("Pokemon Stadium");
         canvas = new GLCanvas();
         
         //Setando os pontos para o cento ficar no 0,0,0

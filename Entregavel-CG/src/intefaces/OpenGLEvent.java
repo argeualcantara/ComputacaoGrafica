@@ -1,10 +1,8 @@
 package intefaces;
 
 import com.sun.opengl.util.GLUT;
-import com.sun.opengl.util.j2d.TextRenderer;
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
-import java.awt.Font;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -33,12 +31,11 @@ public class OpenGLEvent implements GLEventListener{
     private final InputEvent key;
     private final Ponto p1;
     private final Ponto p2;
-    private GLU glu;
     private Texture texturaCubo;
     private Pokemon diglett;
     private Pokemon mew;
-    private float luzY;
     private float luzX;
+    private float luzY;
     int dirX = 1;
     int dirY = 1;
 
@@ -57,7 +54,7 @@ public class OpenGLEvent implements GLEventListener{
         gl.setSwapInterval(1);
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         gl.glShadeModel(GL.GL_SMOOTH);
-        glu = new GLU();
+        GLU glu = new GLU();
         carregarTextura(gl, glu);
         newGame(gl);
         new Thread(){public void run(){
@@ -79,7 +76,7 @@ public class OpenGLEvent implements GLEventListener{
     @SuppressWarnings("empty-statement")
     public void display(GLAutoDrawable drawable) {
        GL gl = drawable.getGL();
-       
+       GLU glu = new GLU();
        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
        gl.glLoadIdentity();
        
@@ -103,8 +100,12 @@ public class OpenGLEvent implements GLEventListener{
            gl.glDisable(GL.GL_LIGHTING);
        }
        
-       if(key.fp){
-           glu.gluLookAt(diglett.eyeX, diglett.eyeY, diglett.eyeZ, diglett.centroX, diglett.centroY, diglett.centroZ, diglett.upx, diglett.upy, key.upz);
+       if(key.isFirstPerson){
+           if(key.diglett.isFirstPerson){
+               glu.gluLookAt(diglett.eyeX, diglett.eyeY, diglett.eyeZ, diglett.centroX, diglett.centroY, diglett.centroZ, diglett.upx, diglett.upy, key.upz);
+           }else if(key.mew.isFirstPerson){
+               glu.gluLookAt(mew.eyeX, mew.eyeY, mew.eyeZ, mew.centroX, mew.centroY, mew.centroZ, mew.upx, mew.upy, key.upz);
+           }
        }else{
            glu.gluLookAt(key.eyeX, key.eyeY, key.eyeZ, key.centroX, key.centroY, key.centroZ, key.upx, key.upy, key.upz);
        }
@@ -145,17 +146,25 @@ public class OpenGLEvent implements GLEventListener{
 
        if(mew.isDead){
            GLUT glut = new GLUT();
+           gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,	FloatBuffer.wrap(new float[] { 0.8f, 0.8f, 0.8f, 0.0f }));
+           gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, FloatBuffer.wrap(new float[] { .8f, .8f, .8f, 0.0f }));
+           gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, FloatBuffer.wrap(new float[] { .8f, .8f, .8f, 0.0f }));
+           gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float[] { 0.0f, 1f, 1.0f, 0.5f }));
+           gl.glColorMaterial(GL.GL_FRONT, GL.GL_DIFFUSE);
            gl.glColor3f (1.0f, 1.0f, 1.0f);  // Set text e.color to black
            gl.glRasterPos3i(-3, -16, 20); // set position
-           
-            glut.glutBitmapString(5, "Diglett Wins");
+           glut.glutBitmapString(5, "Diglett Wins");
 
        }else if (diglett.isDead){
            GLUT glut = new GLUT();
+           gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,	FloatBuffer.wrap(new float[] { 0.8f, 0.8f, 0.8f, 0.0f }));
+           gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, FloatBuffer.wrap(new float[] { .8f, .8f, .8f, 0.0f }));
+           gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, FloatBuffer.wrap(new float[] { .8f, .8f, .8f, 0.0f }));
+           gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float[] { 0.0f, 1f, 1.0f, 0.5f }));
+           gl.glColorMaterial(GL.GL_FRONT, GL.GL_DIFFUSE);
            gl.glColor3f (1.0f, 1.0f, 1.0f);  // Set text e.color to black
            gl.glRasterPos3i(-3, -16, 20); // set position
-           
-            glut.glutBitmapString(5, "Mew Wins");
+           glut.glutBitmapString(5, "Mew Wins");
        }
        gl.glFlush();
     }
@@ -230,6 +239,7 @@ public class OpenGLEvent implements GLEventListener{
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
         GL gl = drawable.getGL();
+        GLU glu = new GLU();
         if (height <= 0) { // avoid a divide by zero error!
             height = 1;
         }

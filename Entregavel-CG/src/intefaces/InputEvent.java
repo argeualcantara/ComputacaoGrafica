@@ -42,12 +42,12 @@ public class InputEvent implements KeyListener{
     private double thyc = 0;
     private double thzc = 0;
     
-    public boolean isWireFrame = false;
-    
     public Pokemon diglett;
     public Pokemon mew;
+    
     float luzZ;
-    public boolean fp;
+    public boolean isWireFrame = false;
+    public boolean isFirstPerson = false;
     public boolean isLightOn = true;
     boolean isNewGame = false;
 
@@ -85,7 +85,7 @@ public class InputEvent implements KeyListener{
         upz_INICIAL = upz;
         
         luzZ = 20;
-        fp = false;
+        isFirstPerson = false;
         
     }
     public void keyTyped(KeyEvent e) {
@@ -249,7 +249,9 @@ public class InputEvent implements KeyListener{
                     case KeyEvent.VK_4: luzZ = 25; break;
                     case KeyEvent.VK_8:
                     case KeyEvent.VK_ASTERISK:
-                    case KeyEvent.VK_MULTIPLY: fp = !fp;break;
+                    case KeyEvent.VK_MULTIPLY: isFirstPerson = !isFirstPerson; diglett.isFirstPerson = true;break;
+                    case KeyEvent.VK_9: if(!diglett.isDead){diglett.isFirstPerson = true; mew.isFirstPerson = false;} break;
+                    case KeyEvent.VK_0: if(!mew.isDead){diglett.isFirstPerson = false; mew.isFirstPerson = true;} break;
                     case KeyEvent.VK_O: isLightOn = !isLightOn;break;
                     case KeyEvent.VK_SPACE: diglett.isAttacking = true;break;
                     case KeyEvent.VK_CONTROL: mew.isAttacking = true;break;
