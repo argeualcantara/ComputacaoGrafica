@@ -1,13 +1,13 @@
 package intefaces;
 
+import com.sun.opengl.util.j2d.TextRenderer;
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
+import java.awt.Font;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
@@ -19,10 +19,8 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 
-import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 import model.Matriz;
-import model.Personagem;
 import model.Pokemon;
 import model.Ponto;
 
@@ -42,7 +40,7 @@ public class OpenGLEvent implements GLEventListener{
     private float luzX;
     int dirX = 1;
     int dirY = 1;
-    
+    private TextRenderer renderer;
     public OpenGLEvent(InputEvent key, Ponto p1, Ponto p2){
         this.key = key;
         this.p1 = p1;
@@ -60,25 +58,25 @@ public class OpenGLEvent implements GLEventListener{
         gl.glShadeModel(GL.GL_SMOOTH);
         glu = new GLU();
         carregarTextura(gl, glu);
-        Matriz mapa = new Matriz();
-        try {
-            diglett = new Pokemon(gl, mapa, "src"+File.separator+"obj"+File.separator+"diglett"+File.separator+"Diglett", 0, 9, 'S');
-            mew = new Pokemon(gl, mapa, "src"+File.separator+"obj"+File.separator+"mew"+File.separator+"BR_Mew", 0, -12, 'N');
-        } catch (Exception ex) {
-            Logger.getLogger(OpenGLEvent.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        this.key.diglett = diglett;
-        this.key.mew = mew;
+        renderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 10));
+        renderer.beginRendering(drawable.getWidth(), drawable.getHeight());
+        // optionally set the color
+        renderer.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        renderer.draw3D("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0f, 0f, 30f, 0.5f);
+        // ... more draw commands, color changes, etc.
+//        renderer.endRendering();
+        newGame(gl);
 
         new Thread(){public void run(){
             try{
-	        	while(true){
-	        		InputStream is = getClass().getClassLoader().getResourceAsStream("sound"+File.separator+"battle_theme.mp3");
-                	BufferedInputStream bis = new BufferedInputStream(is);
-                	final Player mp3Player;
-                	mp3Player = new Player(bis);
-	        		mp3Player.play();
-	        	}
+                while(true){
+                    InputStream is = getClass().getClassLoader().getResourceAsStream("sound"+File.separator+"battle_theme.mp3");
+                    BufferedInputStream bis = new BufferedInputStream(is);
+                    final Player mp3Player;
+                    mp3Player = new Player(bis);
+                    mp3Player.play();
+                    mp3Player.close();
+                }
             } catch(Exception e){
                 e.printStackTrace();
             }
@@ -115,6 +113,11 @@ public class OpenGLEvent implements GLEventListener{
            glu.gluLookAt(diglett.eyeX, diglett.eyeY, diglett.eyeZ, diglett.centroX, diglett.centroY, diglett.centroZ, diglett.upx, diglett.upy, key.upz);
        }else{
            glu.gluLookAt(key.eyeX, key.eyeY, key.eyeZ, key.centroX, key.centroY, key.centroZ, key.upx, key.upy, key.upz);
+       }
+       
+       if(key.isNewGame){
+           key.isNewGame = false;
+           newGame(gl);
        }
        
        drawCube(gl);
@@ -292,5 +295,17 @@ public class OpenGLEvent implements GLEventListener{
         gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, FloatBuffer.wrap(new float [] {0.3f, 0.3f, 0.3f, 0.2f}));
         gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, FloatBuffer.wrap(new float [] {0.3f, 0.5f, 0.5f, 0.6f}));
         gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float [] {0.1f, 1.0f, 0.4f, 0.9f}));
+    }
+
+    private void newGame(GL gl) {
+        Matriz mapa = new Matriz();
+        try {
+            diglett = new Pokemon(gl, mapa, "src"+File.separator+"obj"+File.separator+"diglett"+File.separator+"Diglett", 0, 9, 'S');
+            mew = new Pokemon(gl, mapa, "src"+File.separator+"obj"+File.separator+"mew"+File.separator+"BR_Mew", 0, -12, 'N');
+        } catch (Exception ex) {
+            Logger.getLogger(OpenGLEvent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.key.diglett = diglett;
+        this.key.mew = mew;
     }
 }
