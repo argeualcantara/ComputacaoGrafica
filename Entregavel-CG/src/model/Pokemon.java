@@ -52,10 +52,12 @@ public class Pokemon {
     private static final int CONSTANTE_CENTRO_FP = 3;
     private int lifesLeft = 3;
     public boolean isFirstPerson = false;
+    private String basePath;
     public Pokemon(GL gl, Matriz mapa, String path, int iniX, int iniY, char dir, float scale) throws IOException {
         super();
         this.mapa = mapa;
         this.offset = mapa.ocupado.length/2;
+        basePath = path;
         //Corrigir objetos importados de outro programa com o Z para cima ao inves do Y
         if(path.contains("BR_")){
             PROG = 'B';
@@ -460,8 +462,8 @@ public class Pokemon {
             
             if(lifesLeft > 0){
                 gl.glEnable(GL.GL_COLOR_MATERIAL);
-                gl.glColor3f(1f, 0.2f, 0.2f);
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,	FloatBuffer.wrap(new float[] { 0.9f, 0.5f, 0.5f, 0.0f }));
+                gl.glColor3f(1f, 0.1f, 0.1f);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,	FloatBuffer.wrap(new float[] { 0.9f, 0.3f, 0.3f, 0.0f }));
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, FloatBuffer.wrap(new float[] { .5f, .0f, .0f, 0.0f }));
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, FloatBuffer.wrap(new float[] { .5f, .0f, .0f, 0.0f }));
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float[] { 1f, 0f, 0f, 0.5f }));
@@ -557,6 +559,21 @@ public class Pokemon {
     }
 
     private void destruir(GL gl) {
+        try {
+            String audioPath = basePath+".wav";
+            AudioInputStream soundIn = AudioSystem.getAudioInputStream(new File(audioPath));
+            AudioFormat format = soundIn.getFormat();
+            DataLine.Info info = new DataLine.Info(Clip.class, format);
+            Clip clip = (Clip)AudioSystem.getLine(info);
+            clip.open(soundIn);
+            clip.start();
+            while(clip.isActive()){
+                if(!clip.isRunning())
+                    clip.close();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         float posx = posX, posy = posY, posz = posZ;
         for (float i = posZ; i > -1; i-= 0.1f) {
             gl.glPushMatrix();

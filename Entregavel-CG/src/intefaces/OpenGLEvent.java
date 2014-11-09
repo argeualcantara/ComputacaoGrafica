@@ -152,7 +152,11 @@ public class OpenGLEvent implements GLEventListener{
            gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float[] { 0.0f, 1f, 1.0f, 0.5f }));
            gl.glColorMaterial(GL.GL_FRONT, GL.GL_DIFFUSE);
            gl.glColor3f (1.0f, 1.0f, 1.0f);  // Set text e.color to black
-           gl.glRasterPos3i(-3, -16, 20); // set position
+           if(diglett.isFirstPerson && key.isFirstPerson){
+                gl.glRasterPos3i(key.diglett.centroX, key.diglett.centroY, key.diglett.centroZ); // set position
+           }else{
+                gl.glRasterPos3i(-3, -16, 20); // set position
+           }
            glut.glutBitmapString(5, "Diglett Wins");
 
        }else if (diglett.isDead){
@@ -163,7 +167,11 @@ public class OpenGLEvent implements GLEventListener{
            gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, FloatBuffer.wrap(new float[] { 0.0f, 1f, 1.0f, 0.5f }));
            gl.glColorMaterial(GL.GL_FRONT, GL.GL_DIFFUSE);
            gl.glColor3f (1.0f, 1.0f, 1.0f);  // Set text e.color to black
-           gl.glRasterPos3i(-3, -16, 20); // set position
+           if(mew.isFirstPerson && key.isFirstPerson){
+                gl.glRasterPos3i(key.mew.centroX, key.mew.centroY, key.mew.centroZ); // set position
+           }else{
+                gl.glRasterPos3i(-3, -16, 20); // set position
+           }
            glut.glutBitmapString(5, "Mew Wins");
        }
        gl.glFlush();
@@ -326,5 +334,6 @@ public class OpenGLEvent implements GLEventListener{
         }
         this.key.diglett = diglett;
         this.key.mew = mew;
+        this.key.isFirstPerson = false;
     }
 }

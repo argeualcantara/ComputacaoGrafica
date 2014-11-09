@@ -249,7 +249,15 @@ public class InputEvent implements KeyListener{
                     case KeyEvent.VK_4: luzZ = 25; break;
                     case KeyEvent.VK_8:
                     case KeyEvent.VK_ASTERISK:
-                    case KeyEvent.VK_MULTIPLY: isFirstPerson = !isFirstPerson; diglett.isFirstPerson = true;break;
+                    case KeyEvent.VK_MULTIPLY: isFirstPerson = !isFirstPerson;
+                                               if(!diglett.isDead){
+                                                   diglett.isFirstPerson = true;
+                                                    mew.isFirstPerson = false;
+                                               } else if(!mew.isDead){
+                                                   diglett.isFirstPerson = false;
+                                                    mew.isFirstPerson = true;
+                                               }
+                                                break;
                     case KeyEvent.VK_9: if(!diglett.isDead){diglett.isFirstPerson = true; mew.isFirstPerson = false;} break;
                     case KeyEvent.VK_0: if(!mew.isDead){diglett.isFirstPerson = false; mew.isFirstPerson = true;} break;
                     case KeyEvent.VK_O: isLightOn = !isLightOn;break;
