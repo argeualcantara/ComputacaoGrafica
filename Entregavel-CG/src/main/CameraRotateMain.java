@@ -1,8 +1,8 @@
 package main;
 
 import com.sun.opengl.util.Animator;
-import intefaces.OpenGLEvent;
-import intefaces.InputEvent;
+import interfaces.OpenGLEvent;
+import interfaces.InputEvent;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
